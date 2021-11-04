@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Les_3010
 {
@@ -18,7 +15,20 @@ namespace Les_3010
         Взрослый,
         Ребенок_,
         Ведьмак_
-    }    
+    }
+    enum HeroTypeWithotUnderscore
+    {
+        Вампир,
+        Ведьма,
+        Оборотень,
+        Призрак,
+        Демон,
+        Зомби,
+        Черная_вдова,
+        Взрослый,
+        Ребенок,
+        Ведьмак
+    }
     enum FoodType
     {
         Жизнь,
@@ -79,11 +89,11 @@ namespace Les_3010
             switch ((int)action)
             {
                 case 0:
-                    return $"{hero1.Type} встретил {hero2.Type}";
+                    return $"{(HeroTypeWithotUnderscore)hero1.Type} встретил {(HeroTypeWithotUnderscore)hero2.Type}";
                 case 1:
-                    return $"{hero1.Type} убил {hero2.Type}";
+                    return $"{(HeroTypeWithotUnderscore)hero1.Type} убил {(HeroTypeWithotUnderscore)hero2.Type}";
                 case 2:
-                    return $"{hero1.Type} умер от {hero2.Type}";
+                    return $"{(HeroTypeWithotUnderscore)hero1.Type} умер от {(HeroTypeWithotUnderscore)hero2.Type}";
                 default:
                     return "Error";
             }
@@ -93,9 +103,9 @@ namespace Les_3010
             switch ((int)action)
             {
                 case 3:
-                    return $"{hero1.Type} вручил {hero2.Type} подарок: {gift} в размере {points}";
+                    return $"{(HeroTypeWithotUnderscore)hero1.Type} вручил {(HeroTypeWithotUnderscore)hero2.Type} подарок: {gift} в размере {points}";
                 case 4:
-                    return $"{hero1.Type} получил от {hero2.Type} подарок: {gift} в размере {points}";
+                    return $"{(HeroTypeWithotUnderscore)hero1.Type} получил от {(HeroTypeWithotUnderscore)hero2.Type} подарок: {gift} в размере {points}";
                 default:
                     return "Error";
             }
@@ -151,13 +161,16 @@ namespace Les_3010
                     if (Randomizer(chanceOfGift) && (hero1 as Monster).Gift != Gift.Ничего)
                     {
                         result = PrintMeeting(hero1, hero2, ActionType.Подарил, (hero1 as Monster).Gift, (hero1 as Monster).GiftPoints);
-                        if ((hero1 as Monster).Gift == Gift.Бессмертие)
-                        {
-                            (hero2 as Human).Deathless = true;
-                        }
-                        else if ((hero1 as Monster).Gift == Gift.Восстановление_крови)
-                        {
-                            (hero2 as Human).Replenish(Gift.Восстановление_крови, (hero1 as Monster).GiftPoints);
+                        switch ((int)(hero1 as Monster).Gift) {
+                            case 0:
+                                (hero2 as Human).Deathless = true;
+                                break;
+                            case 1:
+                                (hero2 as Human).ReplenishBlood((hero1 as Monster).GiftPoints);
+                                break;
+                            case 2:
+                                (hero2 as Human).Sweets += (hero1 as Monster).GiftPoints;
+                                break;
                         }
                     }
                     else
@@ -178,12 +191,12 @@ namespace Les_3010
                                     (hero2 as Human).HeartPoints -= points;
                                     break;
                                 case 1:
-                                    points = (max - points) >= (hero2 as Human).BloodPoints ? (hero2 as Human).BloodPoints : max;
-                                    (hero2 as Human).BloodPoints -= points;
+                                    points = (max - points) >= (hero2 as Human).Sweets ? (hero2 as Human).Sweets : max;
+                                    (hero2 as Human).Sweets -= points;                                    
                                     break;
                                 case 2:
-                                    points = (max - points) >= (hero2 as Human).Sweets ? (hero2 as Human).Sweets : max;
-                                    (hero2 as Human).Sweets -= points;
+                                    points = (max - points) >= (hero2 as Human).BloodPoints ? (hero2 as Human).BloodPoints : max;
+                                    (hero2 as Human).BloodPoints -= points;
                                     break;
                             }
                             (hero1 as Monster).FoodPoints += points;
@@ -203,13 +216,17 @@ namespace Les_3010
                     if (Randomizer(chanceOfGift) && (hero2 as Monster).Gift != Gift.Ничего)
                     {
                         result = PrintMeeting(hero1, hero2, ActionType.Получил, (hero2 as Monster).Gift, (hero2 as Monster).GiftPoints);
-                        if ((hero2 as Monster).Gift == Gift.Бессмертие)
+                        switch ((int)(hero2 as Monster).Gift)
                         {
-                            (hero1 as Human).Deathless = true;
-                        }
-                        else if ((hero2 as Monster).Gift == Gift.Восстановление_крови)
-                        {
-                            (hero1 as Human).Replenish(Gift.Восстановление_крови, (hero2 as Monster).GiftPoints);
+                            case 0:
+                                (hero1 as Human).Deathless = true;
+                                break;
+                            case 1:
+                                (hero1 as Human).ReplenishBlood((hero2 as Monster).GiftPoints);
+                                break;
+                            case 2:
+                                (hero1 as Human).Sweets += (hero2 as Monster).GiftPoints;
+                                break;
                         }
                     }
                     else
@@ -229,13 +246,13 @@ namespace Les_3010
                                     points = (max - points) >= (hero1 as Human).HeartPoints ? (hero1 as Human).HeartPoints : max;
                                     (hero1 as Human).HeartPoints -= points;
                                     break;
-                                case 1:
-                                    points = (max - points) >= (hero1 as Human).BloodPoints ? (hero1 as Human).BloodPoints : max;
-                                    (hero1 as Human).BloodPoints -= points;
-                                    break;
-                                case 2:
+                                case 1:                                    
                                     points = (max - points) >= (hero1 as Human).Sweets ? (hero1 as Human).Sweets : max;
                                     (hero1 as Human).Sweets -= points;
+                                    break;
+                                case 2:
+                                    points = (max - points) >= (hero1 as Human).BloodPoints ? (hero1 as Human).BloodPoints : max;
+                                    (hero1 as Human).BloodPoints -= points;
                                     break;
                             }
                             (hero2 as Monster).FoodPoints += points;

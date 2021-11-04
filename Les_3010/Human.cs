@@ -62,38 +62,20 @@ namespace Les_3010
             }
         }
 
-        public void Replenish(Gift gift, double points)
+        public void ReplenishBlood(double points)
         {
-            if (gift == Gift.Восстановление_крови)
+            if (points >= bloodPointsMax_adult && Type == HeroType.Взрослый)
             {
-                if (points >= bloodPointsMax_adult && Type == HeroType.Взрослый)
-                {
-                    bloodPoints = bloodPointsMax_adult;
-                }
-                else if (points >= bloodPointsMax_child && Type == HeroType.Ребенок_)
-                {
-                    bloodPoints = bloodPointsMax_adult;
-                }
-                else
-                {
-                    bloodPoints += points;
-                }
+                bloodPoints = bloodPointsMax_adult;
             }
-            else if (gift == Gift.Конфета)
+            else if (points >= bloodPointsMax_child && Type == HeroType.Ребенок_)
             {
-                if (points >= heartPointsMax_adult && Type == HeroType.Взрослый)
-                {
-                    HeartPoints = heartPointsMax_adult;
-                }
-                else if (points >= heartPointsMax_child && Type == HeroType.Ребенок_)
-                {
-                    HeartPoints = heartPointsMax_adult;
-                }
-                else
-                {
-                    HeartPoints += points;
-                }
+                bloodPoints = bloodPointsMax_adult;
             }
+            else
+            {
+                bloodPoints += points;
+            }        
         }
 
         public string GetStatus()
